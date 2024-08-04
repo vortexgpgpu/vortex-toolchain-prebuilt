@@ -21,43 +21,40 @@ jobs:
       fail-fast: false
       matrix:
         name: [regression, opencl]
-        os: [ubuntu-20.04, centos-7]
+        os: [ubuntu-18.04, ubuntu-20.04, centos-7]
 
     runs-on: ${{ matrix.os }}
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
+      - name: Checkout Vortex
+        run: |
+          git clone --depth=1 --recursive https://github.com/vortexgpgpu/vortex.git
 
       - name: Install Dependencies
         run: |
+          cd vortex
           sudo bash ./ci/system_updates.sh
 
       - name: Setup Toolchain
         run: |
-          TOOLDIR=$PWD/tools
+          TOOLDIR=$HOME/tools
+          cd vortex
           mkdir -p build
           cd build
-          ../configure --tooldir=$TOOLDIR
+          ../configure --tooldir=$TOOLDIR --xlen=64
           ci/toolchain_install.sh --all
-
-      - name: Setup Third Party
-        run: |
           make -C third_party > /dev/null
 
       - name: Run Build
         run: |
-          TOOLDIR=$PWD/tools
-          mkdir -p build64
-          cd build64
-          ../configure --tooldir=$TOOLDIR --xlen=64
+          cd vortex/build
           source ci/toolchain_env.sh
           make software -s > /dev/null
           make tests -s > /dev/null
 
       - name: Run tests
         run: |
-          cd build64
+          cd vortex/build
           source ci/toolchain_env.sh
           chmod -R +x . # Ensure all files have executable permissions
           if [ "${{ matrix.name }}" == "regression" ]; then
