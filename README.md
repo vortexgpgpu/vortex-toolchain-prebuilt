@@ -1,7 +1,7 @@
 # vortex-toolchain-prebuilt
 
 Prebuilt binaries (LLVM, POCL, chipStar, libc/libcrt, riscv-gnu-toolchain,
-verilator, yosys, sv2v, sta) for the [Vortex GPGPU](https://github.com/vortexgpgpu/vortex).
+verilator, yosys, sv2v, sta, SLASH) for the [Vortex GPGPU](https://github.com/vortexgpgpu/vortex).
 Pulled by `ci/toolchain_install.sh` from the Vortex repo via the
 `TOOLCHAIN_REV` tag pin.
 
@@ -14,6 +14,20 @@ Or use the Vortex repo's installer (recommended):
     $ cd vortex && ./configure && cd build && ./ci/toolchain_install.sh --all
 
 ## Releases
+
+### v3.0.1 (refreshed 2026-08-28)
+
+- **mesa-vortex + POCL**: refreshed bundles.
+- **SLASH** *(new)*: AMD Alveo V80 platform userspace (VRT runtime,
+  `vrtd`, `v80-smi`, `slashkit`), built from the
+  [`vortexgpgpu/SLASH`](https://github.com/vortexgpgpu/SLASH) fork,
+  branch `vortex_3.x`. Installed by `toolchain_install.sh --slash` into
+  `$TOOLDIR/slash` (use as `VRT_HOME`). Note: built on Ubuntu 24.04
+  (noble); although published under the `ubuntu/focal` path (vortex's
+  `configure` maps focal/jammy/noble to it), the binaries need
+  noble-era glibc — on older distros build SLASH from source. The V80
+  kernel driver is not in this tarball; it ships as `.deb` packages
+  built from the same fork.
 
 ### v3.0 (2026-05-15)
 
