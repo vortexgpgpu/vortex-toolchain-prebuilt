@@ -15,6 +15,16 @@ Or use the Vortex repo's installer (recommended):
 
 ## Releases
 
+### v3.0.1 (refreshed 2026-09-02)
+
+- **mesa-vortex + POCL**: refreshed bundles.
+- **FireSim and SLASH removed.** Both are platform stacks an administrator
+  installs once per machine — like XRT, which was never packaged here — and CI
+  never consumed either. The matching `toolchain_install.sh --firesim` /
+  `--slash` flags are gone from the Vortex repo; install instructions live in
+  `docs/building_toolchain.md` (FireSim) and `docs/xilinx_slash_setup.md`
+  (SLASH).
+
 ### v3.0 (2026-05-15)
 
 - **LLVM**: LLVM 20.1.8 (Vortex fork, RISC-V + X86 + clang + lld). Bundles
