@@ -15,8 +15,12 @@ Or use the Vortex repo's installer (recommended):
 
 ## Releases
 
-### v3.0.1 (refreshed 2026-09-02)
+### v3.0.1 (refreshed 2026-10-04)
 
+- **LLVM**: llvm-vortex codegen fixes from `vortex_3.x` @ `cd5be82eb447`
+  (divergence lowering in large kernels, SimplifyCFG/LowerSwitch order,
+  register-group copies, late vector-op legalization). Only
+  `lib/libLLVMRISCVCodeGen.so.20.1` changes.
 - **mesa-vortex + POCL**: refreshed bundles.
 - **FireSim and SLASH removed.** Both are platform stacks an administrator
   installs once per machine — like XRT, which was never packaged here — and CI
