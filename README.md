@@ -17,11 +17,12 @@ Or use the Vortex repo's installer (recommended):
 
 ### v3.0.1 (refreshed 2026-10-04)
 
-- **LLVM**: llvm-vortex codegen fixes from `vortex_3.x` @ `cd5be82eb447`
-  (divergence lowering in large kernels, SimplifyCFG/LowerSwitch order,
-  register-group copies, late vector-op legalization). Only
-  `lib/libLLVMRISCVCodeGen.so.20.1` changes.
-- **mesa-vortex + POCL**: refreshed bundles.
+- **LLVM**: llvm-vortex rebuilt at `vortex_3.x` @ `cd5be82eb447`: divergence
+  lowering in large kernels, SimplifyCFG/LowerSwitch order, register-group
+  copies, late vector-op legalization.
+- **mesa-vortex**: rebuilt at `vortex_3.x` @ `a5650eba435` against Vortex
+  master `6f372b0ae` (Vulkan ray-tracing pipelines on the RTU).
+- **POCL**: refreshed bundle.
 - **FireSim and SLASH removed.** Both are platform stacks an administrator
   installs once per machine — like XRT, which was never packaged here — and CI
   never consumed either. The matching `toolchain_install.sh --firesim` /
