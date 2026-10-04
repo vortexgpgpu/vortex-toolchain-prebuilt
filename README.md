@@ -22,7 +22,9 @@ Or use the Vortex repo's installer (recommended):
   copies, late vector-op legalization.
 - **mesa-vortex**: rebuilt at `vortex_3.x` @ `a5650eba435` against Vortex
   master `6f372b0ae` (Vulkan ray-tracing pipelines on the RTU).
-- **POCL**: refreshed bundle.
+- **POCL**: rebuilt at `vortex_3.x` @ `5e06f2f44` against Vortex master
+  `6f372b0ae` (both XLEN kernel libraries): by-value struct kernel
+  arguments passed inline, single-precision `exp` in float arithmetic.
 - **FireSim and SLASH removed.** Both are platform stacks an administrator
   installs once per machine — like XRT, which was never packaged here — and CI
   never consumed either. The matching `toolchain_install.sh --firesim` /
