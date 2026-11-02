@@ -15,6 +15,17 @@ Or use the Vortex repo's installer (recommended):
 
 ## Releases
 
+### v3.0.1 (refreshed 2026-11-02)
+
+- **RHEL 9 (`rhel/9`)**: new per-OS slot for EL9 hosts (RHEL, Rocky, AlmaLinux,
+  CentOS Stream 9). The `ubuntu/focal` builds need glibc 2.35 / `GLIBCXX_3.4.30`
+  and do not load there. Built natively on RHEL 9.8 (glibc 2.34, GCC 11):
+  llvm-vortex (`vortex_3.x` @ `a81a5957f406`, + `llvm-spirv`), verilator 5.050,
+  yosys 0.69 and sta (OpenSTA `2f6ccdae`). The pocl, chipstar and mesa-vortex
+  focal binaries are copied unchanged, because they already fit EL9 and link the
+  `rhel/9` LLVM ABI. The Vortex installer reuses the `ubuntu/focal` riscv-gnu and
+  sv2v bundles for `rhel/9`. No gem5 bundle.
+
 ### v3.0.1 (refreshed 2026-10-04)
 
 - **LLVM**: llvm-vortex rebuilt at `vortex_3.x` @ `cd5be82eb447`: divergence
