@@ -1,7 +1,7 @@
 # vortex-toolchain-prebuilt
 
 Prebuilt binaries (LLVM, POCL, chipStar, libc/libcrt, riscv-gnu-toolchain,
-verilator, yosys, sv2v, sta) for the [Vortex GPGPU](https://github.com/vortexgpgpu/vortex).
+verilator, yosys, sv2v, sta, CIRCT, Foldsim) for the [Vortex GPGPU](https://github.com/vortexgpgpu/vortex).
 Pulled by `ci/toolchain_install.sh` from the Vortex repo via the
 `TOOLCHAIN_REV` tag pin.
 
@@ -14,6 +14,25 @@ Or use the Vortex repo's installer (recommended):
     $ cd vortex && ./configure && cd build && ./ci/toolchain_install.sh --all
 
 ## Releases
+
+### v3.0.1 (refreshed 2026-11-06)
+
+- **LLVM** (`ubuntu/focal`): llvm-vortex rebuilt at `vortex_3.x` @
+  `1e6610b8e5ed`. Adds the XVortex wide loads and stores (`vx_flw.d/.q`,
+  `vx_fsw.d/.q`) behind the new `+xvortexldstwide` target feature, plus
+  register-group and divergence codegen fixes. With `+xvortex` alone the
+  emitted ISA is unchanged from v3.0. `llvm::createLoadStoreVectorizerPass`
+  now takes an optional function filter. The `rhel/9` bundle is still
+  `a81a5957f406`.
+- **CIRCT** *(new)*: `circt-verilog`, `circt-opt` and `firtool` from
+  `vortexgpgpu/circt` `vortex_3.x` @ `892a65a01`. These are the SystemVerilog
+  frontend of the Vortex synthesis flows. They lower processes that drive
+  several interface ports, fold zero-width comparisons, keep RAM initial
+  contents and keep port attributes. libstdc++ is linked statically.
+- **Foldsim** *(new)*: `vortexgpgpu/foldsim` @ `d8350bc`, built on that CIRCT.
+  Ships the `foldsim` driver, `foldsim-opt` (Beacon `foldsim-estimate-timing`
+  and `foldsim-estimate-area`), `foldsim-lift` and the FPGA shell
+  (`share/foldsim`). Install it with `toolchain_install.sh --foldsim`.
 
 ### v3.0.1 (refreshed 2026-11-02)
 
