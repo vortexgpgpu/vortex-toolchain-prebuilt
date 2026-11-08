@@ -15,6 +15,13 @@ Or use the Vortex repo's installer (recommended):
 
 ## Releases
 
+### v3.0.1 (refreshed 2026-11-07)
+
+- **LLVM** (`ubuntu/focal`): llvm-vortex rebuilt at `vortex_3.x` @
+  `f44a6bb2af4c`. A `__UNIFORM__` local is promoted to a register instead of
+  being reloaded from the stack on every use. The `rhel/9` bundle is still
+  `a81a5957f406`.
+
 ### v3.0.1 (refreshed 2026-11-06)
 
 - **LLVM** (`ubuntu/focal`): llvm-vortex rebuilt at `vortex_3.x` @
