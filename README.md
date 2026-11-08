@@ -15,22 +15,24 @@ Or use the Vortex repo's installer (recommended):
 
 ## Releases
 
-### v3.0.1 (refreshed 2026-11-07)
+### v3.0.2 (2026-11-08)
+
+v3.0.1 plus a new LLVM, the pocl rebuilt on it, and two new tools. The LLVM
+changes code generation, so instruction and cycle counts move against
+baselines recorded with v3.0.1. The v3.0.1 tag stays on its 2026-11-02 refresh.
 
 - **LLVM** (`ubuntu/focal`): llvm-vortex rebuilt at `vortex_3.x` @
-  `f44a6bb2af4c`. A `__UNIFORM__` local is promoted to a register instead of
-  being reloaded from the stack on every use. The `rhel/9` bundle is still
-  `a81a5957f406`.
-
-### v3.0.1 (refreshed 2026-11-06)
-
-- **LLVM** (`ubuntu/focal`): llvm-vortex rebuilt at `vortex_3.x` @
-  `1e6610b8e5ed`. Adds the XVortex wide loads and stores (`vx_flw.d/.q`,
-  `vx_fsw.d/.q`) behind the new `+xvortexldstwide` target feature, plus
-  register-group and divergence codegen fixes. With `+xvortex` alone the
-  emitted ISA is unchanged from v3.0. `llvm::createLoadStoreVectorizerPass`
-  now takes an optional function filter. The `rhel/9` bundle is still
-  `a81a5957f406`.
+  `f44a6bb2af4c`. Adds the XVortex wide loads and stores (`vx_flw.d/.q`,
+  `vx_fsw.d/.q`) behind the new `+xvortexldstwide` target feature, and 64-bit
+  atomics on RV32 register pairs behind `+xvortexamod`. Also register-group
+  and divergence codegen fixes. A `__UNIFORM__` local is promoted to a
+  register instead of being reloaded from the stack. With `+xvortex` alone no
+  new instruction is emitted. `llvm::createLoadStoreVectorizerPass` now takes
+  an optional function filter. The `rhel/9` bundle is still `a81a5957f406`.
+- **pocl** (`ubuntu/focal`): the same source (`vortex_3.x` @ `5e06f2f44`) and
+  configuration, rebuilt against that LLVM. libpocl now resolves every LLVM
+  symbol it imports. The previous build referenced the old
+  `createLoadStoreVectorizerPass()` and failed to load under `LD_BIND_NOW`.
 - **CIRCT** *(new)*: `circt-verilog`, `circt-opt` and `firtool` from
   `vortexgpgpu/circt` `vortex_3.x` @ `892a65a01`. These are the SystemVerilog
   frontend of the Vortex synthesis flows. They lower processes that drive
