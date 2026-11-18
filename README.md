@@ -15,7 +15,7 @@ Or use the Vortex repo's installer (recommended):
 
 ## Releases
 
-### v3.0.2 (2026-11-08)
+### v3.0.2 (2026-11-08, pocl refreshed 2026-11-18)
 
 v3.0.1 plus a new LLVM, the pocl rebuilt on it, and two new tools. The LLVM
 changes code generation, so instruction and cycle counts move against
@@ -33,6 +33,12 @@ baselines recorded with v3.0.1. The v3.0.1 tag stays on its 2026-11-02 refresh.
   configuration, rebuilt against that LLVM. libpocl now resolves every LLVM
   symbol it imports. The previous build referenced the old
   `createLoadStoreVectorizerPass()` and failed to load under `LD_BIND_NOW`.
+- **pocl refresh (2026-11-18)**: rebuilt at `vortex_3.x` @ `471f88096` with
+  the same configuration and LLVM. `barrier()` and `mem_fence()` now emit the
+  fence their memory scope needs. `atomic_cmpxchg` is correct under contention
+  within a warp. `atomic_xchg` on `float` and the `atom_*` names of the
+  `cl_khr_*_int32_*_atomics` extensions are added. An image's texture
+  descriptor is rewritten only when it changes.
 - **CIRCT** *(new)*: `circt-verilog`, `circt-opt` and `firtool` from
   `vortexgpgpu/circt` `vortex_3.x` @ `892a65a01`. These are the SystemVerilog
   frontend of the Vortex synthesis flows. They lower processes that drive
