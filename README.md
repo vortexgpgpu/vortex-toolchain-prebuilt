@@ -48,18 +48,18 @@ baselines recorded with v3.0.1. The v3.0.1 tag stays on its 2026-11-02 refresh.
   Ships the `foldsim` driver, `foldsim-opt` (Beacon `foldsim-estimate-timing`
   and `foldsim-estimate-area`), `foldsim-lift` and the FPGA shell
   (`share/foldsim`). Install it with `toolchain_install.sh --foldsim`.
-- **SLASH 2.0.0** *(optional, manual install)*: the Alveo V80 userspace
+- **SLASH 1.0.0** *(optional, manual install)*: the Alveo V80 userspace
   (`slashkit`, VRT, `vrtd`, `v80-smi`, headers and CMake configs) from
-  `vortexgpgpu/SLASH` `feature/vrtd-design-uuid` @ `6cb47f6e`. `vrtd` no
-  longer writes a design the card already holds, as XRT does for an xclbin:
-  `slashkit` stamps a UUID into each vbin, `vrtd` remembers the UUID it
-  wrote, `VRT_FORCE_PROGRAM=1` writes anyway, `v80-smi forget-design`
-  reports a design loaded over JTAG, and a design another client uses cannot
-  be replaced. The client libraries are `.so.2`: their ABI and the daemon's
-  request format changed, so a program built against SLASH 1.0.0 must be
-  rebuilt, and the daemon and the libraries must come from the same release.
-  Built on Ubuntu 24.04 (glibc 2.38, Python 3.12); not used by CI or
-  `toolchain_install.sh`. See Vortex `docs/xilinx_slash_setup.md`.
+  `vortexgpgpu/SLASH` `vortex_3.x` @ `720754bb`. `vrtd` no longer writes a
+  design the card already holds, as XRT does for an xclbin: `slashkit`
+  stamps a UUID into each vbin, `vrtd` remembers the UUID it wrote,
+  `VRT_FORCE_PROGRAM=1` writes anyway, `v80-smi forget-design` reports a
+  design loaded over JTAG, and a design another client uses cannot be
+  replaced. The daemon's request format and the client libraries' ABI
+  changed while their SONAMEs did not: the daemon and the libraries must
+  come from the same build, and a program built against an earlier SLASH
+  must be rebuilt. Built on Ubuntu 24.04 (glibc 2.38, Python 3.12); not used
+  by CI or `toolchain_install.sh`. See Vortex `docs/xilinx_slash_setup.md`.
 
 ### v3.0.1 (refreshed 2026-11-02)
 
