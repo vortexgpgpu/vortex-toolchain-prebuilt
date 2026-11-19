@@ -1,7 +1,7 @@
 # vortex-toolchain-prebuilt
 
 Prebuilt binaries (LLVM, POCL, chipStar, libc/libcrt, riscv-gnu-toolchain,
-verilator, yosys, sv2v, sta, CIRCT, Foldsim) for the [Vortex GPGPU](https://github.com/vortexgpgpu/vortex).
+verilator, yosys, sv2v, sta, CIRCT, Foldsim, and optionally SLASH) for the [Vortex GPGPU](https://github.com/vortexgpgpu/vortex).
 Pulled by `ci/toolchain_install.sh` from the Vortex repo via the
 `TOOLCHAIN_REV` tag pin.
 
@@ -48,6 +48,18 @@ baselines recorded with v3.0.1. The v3.0.1 tag stays on its 2026-11-02 refresh.
   Ships the `foldsim` driver, `foldsim-opt` (Beacon `foldsim-estimate-timing`
   and `foldsim-estimate-area`), `foldsim-lift` and the FPGA shell
   (`share/foldsim`). Install it with `toolchain_install.sh --foldsim`.
+- **SLASH 2.0.0** *(optional, manual install)*: the Alveo V80 userspace
+  (`slashkit`, VRT, `vrtd`, `v80-smi`, headers and CMake configs) from
+  `vortexgpgpu/SLASH` `feature/vrtd-design-uuid` @ `6cb47f6e`. `vrtd` no
+  longer writes a design the card already holds, as XRT does for an xclbin:
+  `slashkit` stamps a UUID into each vbin, `vrtd` remembers the UUID it
+  wrote, `VRT_FORCE_PROGRAM=1` writes anyway, `v80-smi forget-design`
+  reports a design loaded over JTAG, and a design another client uses cannot
+  be replaced. The client libraries are `.so.2`: their ABI and the daemon's
+  request format changed, so a program built against SLASH 1.0.0 must be
+  rebuilt, and the daemon and the libraries must come from the same release.
+  Built on Ubuntu 24.04 (glibc 2.38, Python 3.12); not used by CI or
+  `toolchain_install.sh`. See Vortex `docs/xilinx_slash_setup.md`.
 
 ### v3.0.1 (refreshed 2026-11-02)
 
