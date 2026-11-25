@@ -1,7 +1,7 @@
 # vortex-toolchain-prebuilt
 
 Prebuilt binaries (LLVM, POCL, chipStar, libc/libcrt, riscv-gnu-toolchain,
-verilator, yosys, sv2v, sta, CIRCT, Foldsim, and optionally SLASH) for the [Vortex GPGPU](https://github.com/vortexgpgpu/vortex).
+verilator, yosys, sv2v, sta, CIRCT, Foldsim, Beacon, and optionally SLASH) for the [Vortex GPGPU](https://github.com/vortexgpgpu/vortex).
 Pulled by `ci/toolchain_install.sh` from the Vortex repo via the
 `TOOLCHAIN_REV` tag pin.
 
@@ -14,6 +14,43 @@ Or use the Vortex repo's installer (recommended):
     $ cd vortex && ./configure && cd build && ./ci/toolchain_install.sh --all
 
 ## Releases
+
+### v3.0.3 (2026-11-25)
+
+v3.0.2 plus CIRCT, Foldsim, Beacon (new) and SLASH from their
+[orcaslab](https://github.com/orcaslab) `main` branches, the organization the
+forks moved to. Every other bundle is unchanged from v3.0.2. All four are built
+in an `ubuntu:22.04` container (GCC 11.4, glibc 2.35, Python 3.10), the CI
+runners' release, and sit in the `ubuntu/focal` folders that Vortex's
+`configure` selects on 20.04, 22.04 and 24.04. The v3.0.2 tag is unchanged.
+
+- **CIRCT**: `circt-verilog`, `circt-opt` and `firtool` from `orcaslab/circt`
+  `main` @ `ab733d13d`, built as Vortex `ci/circt_install.sh` builds it
+  (Release, slang frontend, libstdc++ static). Only glibc is linked
+  dynamically. One 50 MB part.
+- **Foldsim**: `orcaslab/foldsim` `main` @ `50551085`, built on that CIRCT.
+  Ships `bin/` (the `foldsim` driver, `foldsim-opt`, `foldsim-lift`) and the
+  FPGA shell (`share/foldsim`). The Beacon passes left it for Beacon. This
+  build includes the fixes for GCC and Python 3.10: a crash of `foldsim-opt`
+  on folds with pages in HBM (a read of freed stack), compiler-dependent op
+  order in the `fame5` pass, and `--manifest` reading TOML with `tomli` on
+  Python 3.10 (`apt install python3-tomli`). `check-foldsim` passes.
+- **Beacon** *(new)*: `orcaslab/beacon` `main` @ `4060e3af4`, built on that
+  CIRCT: the `beacon` driver, `beacon-opt`, the gate summary and path tools,
+  and the calibrations (`bin/`). It replaces Vortex's in-tree `ci/beacon.py`.
+  Install it with `toolchain_install.sh --beacon`. `check-beacon` passes.
+- **SLASH 1.0.0** *(optional, manual install)*: the Alveo V80 userspace from
+  `orcaslab/slash` `main` @ `9dfca58b7`, packed from its Debian packages
+  without the Vivado static shell. The code is the v3.0.2 bundle's, from the
+  orcaslab history. Built on 22.04 now, so the Python package moves to
+  `lib/python3.10/dist-packages`. Needs `libjsoncpp25`, `libxml2`, `libzmq5`,
+  `libinih1`, `python3-jinja2`. Not used by CI or `toolchain_install.sh`.
+
+Checked from the extracted tarballs on a clean `ubuntu:22.04`: the CIRCT and
+Beacon binaries load with glibc alone and run; `v80-smi`, `vrtd` and `slashkit`
+run with the libraries above. Vortex's Beacon gates (14 Xilinx and 14 ASIC
+builds) run with these CIRCT and Beacon bundles and pass against baselines
+re-recorded with them.
 
 ### v3.0.2 (2026-11-08, pocl refreshed 2026-11-18)
 
