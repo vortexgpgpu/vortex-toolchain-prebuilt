@@ -40,10 +40,11 @@ runners' release, and sit in the `ubuntu/focal` folders that Vortex's
   and the calibrations (`bin/`). It replaces Vortex's in-tree `ci/beacon.py`.
   Install it with `toolchain_install.sh --beacon`. `check-beacon` passes.
 - **SLASH 1.0.0** *(optional, manual install)*: the Alveo V80 userspace from
-  `orcaslab/slash` `main` @ `9dfca58b7`, packed from its Debian packages
+  `orcaslab/slash` `main` @ `29eb84fb`, packed from its Debian packages
   without the Vivado static shell. The code is the v3.0.2 bundle's, from the
-  orcaslab history. Built on 22.04 now, so the Python package moves to
-  `lib/python3.10/dist-packages`. Needs `libjsoncpp25`, `libxml2`, `libzmq5`,
+  orcaslab history; `29eb84fb` lets its Debian packaging build on 22.04
+  (`dh-dkms | dkms (<< 3.0)`). Built on 22.04 now, so the Python package moves
+  to `lib/python3.10/dist-packages`. Needs `libjsoncpp25`, `libxml2`, `libzmq5`,
   `libinih1`, `python3-jinja2`. Not used by CI or `toolchain_install.sh`.
 
 Checked from the extracted tarballs on a clean `ubuntu:22.04`: the CIRCT and
