@@ -15,7 +15,27 @@ Or use the Vortex repo's installer (recommended):
 
 ## Releases
 
-### v3.0.3 (2026-11-25)
+### v3.0.3 (2026-11-25, Beacon/Foldsim refreshed and rhel/9 added the same day)
+
+**Refresh.** Beacon and Foldsim are rebuilt on `orcaslab/circt` `main` @
+`90c5fd313`, which fixes the memory use of CIRCT's cut-based mapping (Synth
+`CutRewriter`, used by Beacon's `beacon-opt` and by Foldsim). The
+enumerator now frees the cuts nothing reads any more. Before, it kept every
+candidate cut of every node until the module was done. Results are
+byte-identical. `beacon run` max RSS: core 3.57 -> 0.73 GB,
+gpu32_full 30.3 -> 7.27 GB, gpu_rtx5080 > 64 GB (OOM-killed) -> 26.4 GB.
+The Beacon (`4060e3af4`) and Foldsim (`50551085`) sources are unchanged.
+
+- `ubuntu/focal`: `beacon` and `foldsim` rebuilt in `ubuntu:22.04` (GCC
+  11.4), as before. The `circt` bundle is unchanged (`ab733d13d`): the fix
+  does not touch `circt-verilog`. Vortex's Beacon gate baselines record
+  `circt-verilog`'s `CIRCT ab733d13d` line, so they stay valid.
+- `rhel/9` *(new for these three)*: `circt` (`ab733d13d`), `beacon` and
+  `foldsim` (on `90c5fd313`), built natively on RHEL 9.8 with
+  gcc-toolset-13 (libstdc++ static, glibc <= 2.34). EL9 hosts no longer need
+  to patch the focal `circt-verilog`, which binds `hypot@GLIBC_2.35`.
+
+**Original release:**
 
 v3.0.2 plus CIRCT, Foldsim, Beacon (new) and SLASH from their
 [orcaslab](https://github.com/orcaslab) `main` branches, the organization the
