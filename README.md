@@ -1,7 +1,7 @@
 # vortex-toolchain-prebuilt
 
 Prebuilt binaries (LLVM, POCL, chipStar, libc/libcrt, riscv-gnu-toolchain,
-verilator, yosys, sv2v, sta, CIRCT, Foldsim, Beacon, and optionally SLASH) for the [Vortex GPGPU](https://github.com/vortexgpgpu/vortex).
+verilator, yosys, sv2v, sta, CIRCT, Foldsim, Beacon, the Khronos Vulkan loader, and optionally SLASH) for the [Vortex GPGPU](https://github.com/vortexgpgpu/vortex).
 Pulled by `ci/toolchain_install.sh` from the Vortex repo via the
 `TOOLCHAIN_REV` tag pin.
 
@@ -14,6 +14,85 @@ Or use the Vortex repo's installer (recommended):
     $ cd vortex && ./configure && cd build && ./ci/toolchain_install.sh --all
 
 ## Releases
+
+### v3.0.4 (2026-11-26)
+
+v3.0.3 (`d3d3390`) plus a fixed llvm-vortex, the bundles built with it
+(libc, libcrt, `rhel/9` pocl), fixed Foldsim and Beacon, and a new Vulkan
+loader bundle. Every other bundle is byte-identical to v3.0.3: CIRCT
+(`orcaslab/circt` `90c5fd313`), verilator, yosys, sta, riscv-gnu, chipStar,
+mesa-vortex, the `ubuntu/focal` pocl, sv2v, gem5 and SLASH.
+
+- **llvm-vortex** (`ubuntu/focal`, `rhel/9`): `vortex_3.x` @
+  `a0df07abbec2` ("A join is never duplicated": `VX_JOIN` is not
+  duplicable), built as before (`ubuntu:22.04` GCC 11.4; EL9 system GCC 11),
+  with `llvm-spirv`. v3.0.3's `a81a5957f406` duplicated `vx_join` blocks,
+  which emptied the IPDOM stack at run time ("IPDOM stack is empty!") and
+  crashed the register allocator. It also crashed on musl's `wordexp.c`,
+  `lookup_serv.c` and `resolvconf.c` (invalid `vx_split`/`vx_join` dominance
+  after instruction selection) and never finished `getgr_a.c`. With
+  `a0df07abbec2` all four compile in about a second and pass
+  `-verify-machineinstrs`. Same installed file list as v3.0.3 (the focal
+  bundle drops a stale `include/llvm/IR/IntrinsicsRISCVXVortex.td`, deleted
+  upstream).
+- **libc32/libc64**: musl v1.2.5 rebuilt with `a0df07abbec2`. The previous
+  libc was compiled on 2026-05-17 by llvm-vortex `87f0227cb`, whose
+  divergent-branch lowering turned a `>=` select into `>` (fixed by
+  llvm-vortex `69af3fd0084d`): musl's `rint`, and `nearbyint` through it,
+  returned `-0.0` for `+0.0` on RV64. Same 245 files and 1346 objects as
+  before. riscv32 `setjmp`/`longjmp` use `fsw`/`flw` under `ilp32f` (as in
+  v3.0). No per-file workaround is needed any more.
+- **libcrt32/libcrt64**: compiler-rt builtins and crtbegin/crtend from the
+  `a0df07abbec2` sources, built with that compiler (the old ones were also
+  `87f0227cb`). Same 155 (rv64) and 156 (rv32) archive members as before.
+- **pocl** (`rhel/9`): `vortex_3.x` @ `471f88096` (the source of both
+  v3.0.3 bundles) built natively on EL9 (system GCC 11) against the `rhel/9`
+  `a0df07abbec2`. v3.0.3's `rhel/9` slot held a focal binary linked against
+  `a81a5957f406`, which imports the old `createLoadStoreVectorizerPass()` and
+  does not load with the new LLVM. Same ICD layout as the focal bundle
+  (`lib/libpocl.so*`, `etc/OpenCL/vendors/pocl.icd`, rv32 and rv64 kernel
+  bitcode) plus `include/CL`, since EL9 ships no OpenCL headers. libpocl
+  resolves all of its LLVM imports and loads under `LD_BIND_NOW`. The
+  `ubuntu/focal` pocl, chipStar and mesa-vortex resolve all of theirs
+  against the new LLVM and are unchanged.
+- **Beacon** (`ubuntu/focal`, `rhel/9`): `orcaslab/beacon` `main` @
+  `134d03b`, three fixes to the depth mapping. Module bodies that two
+  instances share are now mapped in context (`beacon-inline-shared`, at most
+  25 % more ops). `(N-1) - i` index reversals are no longer timed as carry
+  chains (`beacon-lower-complement`). `a[i][w] <= 1` updates no longer keep a
+  read mux under the write (`beacon-inject-in-place`). The area mapping is
+  unchanged. `check-beacon` 26/26 on both OSes.
+- **Foldsim** (`ubuntu/focal`, `rhel/9`): `orcaslab/foldsim` `main` @
+  `5f4df13` = `7b990bb` (lane-scan crash fix: the v3.0.3 `foldsim-opt`
+  segfaulted in `Scan::matchPatterns` on every design with a rotated chain,
+  because GCC treats a for-condition variable read in the loop step as dead)
+  with its `third_party/beacon` moved to `134d03b`, so Foldsim's built-in
+  depth model matches the Beacon above. CIRCT `90c5fd313`, built as in
+  v3.0.3. `check-foldsim` with Verilator 5.050: 289 passed, 1 unsupported,
+  0 failed on both OSes.
+- **vulkan-loader** *(new)*: Khronos Vulkan-Loader `v1.4.369`
+  (`lib/libvulkan.so*`), `ubuntu/focal` built in `ubuntu:22.04`, `rhel/9` in
+  `almalinux:9` (glibc <= 2.34, only libc/libm linked), with the XCB, Xlib,
+  Xrandr and Wayland WSI and the distribution search paths
+  (`SYSCONFDIR=/etc`). Its own test suite: 702/702 on both. Loaders before
+  `v1.4.333` (EL9 ships 1.4.328.1) close the ICD twice when an allocation
+  fails in `vkCreateInstance` (upstream `dc509c2de`); CTS
+  `api.device_init.create_instance_device_intentional_alloc_fail` crashed
+  with the EL9 loader and passes with this one, and `api.device_init`
+  gives 241 Pass, 11 NotSupported, 0 Crash. Installed by Vortex
+  `ci/toolchain_install.sh --vulkan-loader` (needs the Vortex change that
+  moves `TOOLCHAIN_REV` to v3.0.4).
+
+Checked on SimX with the new compiler, libc, libcrt and pocl:
+- `rhel/9` (staged tree; installed tree byte-identical): rint, nearbyint,
+  rintf and nearbyintf on +-0, +-0.5, +-1.5, +-2.5, NaN and +-inf, one
+  thread and one input per lane: all pass on RV64 and RV32 (with the v3.0.3
+  libc64, RV64 returned `-0.0` for `+0.0`). OpenCL `tests/opencl` run-simx
+  (33 tests): 33/33 on x64 and x32. Vulkan rtquery, tex_fetch, blend and tess
+  on x64 and x32: all pass, no device-compiler failure, no IPDOM-stack error.
+- `ubuntu/focal`, installed in a clean `ubuntu:22.04`: rint all pass on RV64
+  and RV32; OpenCL run-simx 33/33 on x64 and x32. `clang`, `foldsim-opt`,
+  `beacon-opt` and `libvulkan.so.1` need at most glibc 2.34.
 
 ### v3.0.3 (2026-11-25, CIRCT/Beacon/Foldsim refreshed and rhel/9 added the same day)
 
